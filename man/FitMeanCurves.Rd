@@ -13,7 +13,6 @@ FitMeanCurves(
   rem0 = FALSE,
   nrepl = NULL,
   replnum = NULL,
-  plotcurves = FALSE,
   method = NULL,
   indpoints = TRUE,
   vartext = NULL
@@ -36,13 +35,7 @@ FitMeanCurves(
 
 \item{replnum}{Value to replace zeros. Default is .01}
 
-\item{plotcurves}{Boolean whether to create plot. If TRUE, a "plots/" directory is created one level above working directory. Default is FALSE.}
-
 \item{method}{Character string of length 1. Accepts "Mean" to fit to mean data or "Pooled" to fit to pooled data}
-
-\item{indpoints}{Boolean whether to plot individual points in gray. Default is TRUE.}
-
-\item{vartext}{Character vector specifying indices to report on plots. Valid indices include "Q0d", "Alpha", "Q0e", "EV", "Pmaxe", "Omaxe", "Pmaxd", "Omaxd", "K", "Q0se", "Alphase", "R2", "AbsSS"}
 }
 \value{
 Data frame

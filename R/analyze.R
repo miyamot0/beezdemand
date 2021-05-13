@@ -414,7 +414,7 @@ FitCurves.linear <- function(dat, equation, agg = NULL, detailed = FALSE, xcol =
   names(adfs) <- ps
   names(newdats) <- ps
 
-  class(dfres) <- "beezdemand"
+#  class(dfres) <- "beezdemand"
 
   if (detailed) {
     return(list("dfres" = dfres,
@@ -733,7 +733,7 @@ FitMeanCurves <- function(dat, equation, k, remq0e = FALSE, replfree = NULL, rem
     }
     dfres <- merge(dfresempirical, dfres, by = "id")
 
-    class(dfres) <- "beezdemand"
+    #class(dfres) <- "beezdemand"
 
     dfres
 }

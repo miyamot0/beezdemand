@@ -148,3 +148,16 @@ lambertW = function(z,b=0,maxiter=10,eps=.Machine$double.eps,min.imag=1e-9) {
   return(w)
 }
 
+#' print.beezdemand
+#'
+#' On print, show data frame, otherwise beez obj
+#'
+#' @param dfres resulting data frame
+#'
+#' @return
+#' @export print.beezdemand
+#' @export
+print.beezdemand = function(dfres) {
+  class(dfres) = "data.frame"
+  print(dfres)
+}
