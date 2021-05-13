@@ -42,7 +42,7 @@
 ##' ## Analyze using Hursh & Silberberg, 2008 equation with a k fixed to 2
 ##' FitCurves(apt[sample(apt$id, 5), ], "hs", k = 2)
 ##' @export
-FitCurves <- function(dat, equation, k, agg = NULL, detailed = FALSE, xcol = "x", 
+FitCurves <- function(dat, equation, k, agg = NULL, detailed = FALSE, xcol = "x",
                       ycol = "y", idcol = "id", groupcol = NULL, lobound, hibound,
                       constrainq0 = NULL, startq0 = NULL, startalpha = NULL) {
 
@@ -53,7 +53,7 @@ FitCurves <- function(dat, equation, k, agg = NULL, detailed = FALSE, xcol = "x"
 
     if (missing(equation)) stop("Need to specify an equation!", call. = FALSE)
     equation <- tolower(equation)
-    
+
     if (!is.numeric(constrainq0) & !is.null(constrainq0)) stop("Q0 constraint must be a number", call. = FALSE)
 
     if (equation == "linear") {
@@ -167,11 +167,11 @@ FitCurves <- function(dat, equation, k, agg = NULL, detailed = FALSE, xcol = "x"
     }
 
     ## TODO: if groupcol is specified (or not), manufacture vector to loop (paste(agg, grps, sep = "-"))
-   
+
     fo <- switch(equation,
                  "hs" = (log(y)/log(10)) ~ (log(q0)/log(10)) + k * (exp(-alpha * q0 * x) - 1),
                  "koff" = y ~ q0 * 10^(k * (exp(-alpha * q0 * x) - 1)))
-    
+
     ## loop to fit data
     for (i in seq_len(np)) {
         dfres[i, "id"] <- ps[i]
@@ -197,7 +197,7 @@ FitCurves <- function(dat, equation, k, agg = NULL, detailed = FALSE, xcol = "x"
         if (!is.null(constrainq0)) {
           adf[, "q0"] <- constrainq0
         }
-        
+
         if (is.null(startq0)) {
           startq0 <- max(adf$y)
         }
@@ -281,7 +281,7 @@ FitCurves <- function(dat, equation, k, agg = NULL, detailed = FALSE, xcol = "x"
         fits[[i]] <- fit
         adfs[[i]] <- adf
 
-        dfres[i, ] <- ExtractCoefs(ps[i], adf, fit, eq = equation, 
+        dfres[i, ] <- ExtractCoefs(ps[i], adf, fit, eq = equation,
                                    cols = colnames(dfres), kest = kest,
                                    constrainq0 = constrainq0)
 
@@ -533,7 +533,6 @@ ExtractCoefs <- function(pid, adf, fit, eq, cols, kest, constrainq0) {
 ##' @param rem0 If TRUE, removes all 0s in consumption data prior to analysis. Default value is FALSE.
 ##' @param nrepl Number of zeros to replace with replacement value (replnum). Can accept either a number or "all" if all zeros should be replaced. Default is to replace the first zero only.
 ##' @param replnum Value to replace zeros. Default is .01
-##' @param plotcurves Boolean whether to create plot. If TRUE, a "plots/" directory is created one level above working directory. Default is FALSE.
 ##' @param method Character string of length 1. Accepts "Mean" to fit to mean data or "Pooled" to fit to pooled data
 ##' @param indpoints Boolean whether to plot individual points in gray. Default is TRUE.
 ##' @param vartext Character vector specifying indices to report on plots. Valid indices include "Q0d", "Alpha", "Q0e", "EV", "Pmaxe", "Omaxe", "Pmaxd", "Omaxd", "K", "Q0se", "Alphase", "R2", "AbsSS"
@@ -545,7 +544,7 @@ ExtractCoefs <- function(pid, adf, fit, eq, cols, kest, constrainq0) {
 ##' ## Fit aggregated data (mean only) using Hursh & Silberberg, 2008 equation with a k fixed at 2
 ##' FitMeanCurves(apt[sample(apt$id, 5), ], "hs", k = 2, method = "Mean")
 ##' @export
-FitMeanCurves <- function(dat, equation, k, remq0e = FALSE, replfree = NULL, rem0 = FALSE, nrepl = NULL, replnum = NULL, plotcurves = FALSE, method = NULL, indpoints = TRUE, vartext = NULL) {
+FitMeanCurves <- function(dat, equation, k, remq0e = FALSE, replfree = NULL, rem0 = FALSE, nrepl = NULL, replnum = NULL, method = NULL, indpoints = TRUE, vartext = NULL) {
 
     if (is.null(method) || !any(c("Mean", "Pooled") %in% method)) stop("No method specified. Choose either 'Mean' or 'Pooled'")
 
@@ -553,29 +552,6 @@ FitMeanCurves <- function(dat, equation, k, remq0e = FALSE, replfree = NULL, rem
         colnames(dat)[which(colnames(dat) == "p")] <- "id"
     } else if (!"id" %in% colnames(dat)) {
          stop("Make sure there is an id column in data")
-    }
-
-    if (plotcurves) {
-        outdir <- paste0(tempdir(), "/")
-
-        tobquote = NULL
-        if (!is.null(vartext)) {
-            dict <- data.frame(Name = c("Q0d", "Alpha", "Intensity", "EV", "Pmaxe",
-                                        "Omaxe", "Pmaxd", "Omaxd", "Pmaxa", "Omaxa",
-                                        "K", "Q0se", "Alphase", "R2", "AbsSS"),
-                               Variable = c("Q[0[d]]", "alpha", "Intensity", "EV", "P[max[e]]",
-                                            "O[max[e]]", "P[max[d]]",  "O[max[d]]", "P[max[a]]",  "O[max[a]]",
-                                            "k", "Q[0[se]]", "alpha[se]", "R^2", "AbsSS"))
-            if (any(is.na(dict$Variable[match(vartext, dict$Name)]))) {
-                warning(paste0("Invalid parameter in vartext! I will go on but won't print any parameters. Try again with one of the following: ", dict$Name))
-                printvars <- FALSE
-            } else {
-                tobquote <- as.character(dict$Variable[match(vartext, dict$Name)])
-                printvars <- TRUE
-            }
-        } else {
-            printvars <- FALSE
-        }
     }
 
     dat <- dat[!is.na(dat$y), ]
@@ -750,92 +726,6 @@ FitMeanCurves <- function(dat, equation, k, remq0e = FALSE, replfree = NULL, rem
     }
     dfres <- merge(dfresempirical, dfres, by = "id")
 
-    if (plotcurves) {
-        majlabels <- c(".0000000001", ".000000001", ".00000001", ".0000001", ".000001", ".00001", ".0001", ".001", ".01", ".1", "1", "10", "100", "1000")
-        majticks <- exp(seq(log(.0000000001), log(1000), length.out = 14))
-        minticks <- minTicks(majticks)
-
-        datmean <- aggregate(y ~ x, data = dat, mean)
-        if (!class(fit) == "try-error") {
-            tempnew <- data.frame(x = seq(min(dat$x[dat$x > 0]), max(dat$x), length.out = 1000))
-            if (equation == "hs") {
-                tempnew$k = dfres[["K"]]
-                tempnew$y <- 10^(predict(fit, newdata = tempnew))
-            } else if (equation == "koff") {
-                tempnew$k = dfres[["K"]]
-                tempnew$y <- predict(fit, newdata = tempnew)
-            } else if (equation == "linear") {
-                tempnew$y <- exp^(predict(fit, newdata = tempnew))
-            }
-            tempnew$expend <- tempnew$x * tempnew$y
-
-            xmin <- min(c(tempnew$x[tempnew$x > 0], .1))
-            xmax <- max(tempnew$x)
-            if (indpoints && method == "Mean") {
-                ymin <- min(c(tempnew$y, dato$y[dato$y > 0], 1))
-                ymax <- min(c(1000, max(c(tempnew$y, dato$y)))) + 5
-            } else {
-                ymin <- min(c(tempnew$y, dat$y[dat$y > 0], 1))
-                ymax <- min(c(1000, max(c(tempnew$y, dat$y)))) + 5
-            }
-
-            pdf(file = paste0(outdir, method, ".pdf"))
-            par(mar = c(5, 4, 4, 4) + 0.3)
-            plot(tempnew$x, tempnew$y,
-                 type = "n", log = "xy", yaxt = "n", xaxt = "n", bty = "l",
-                 xlim = c(xmin, xmax),
-                 ylim = c(ymin, ymax),
-                 xlab = "Price", ylab = "Reported Consumption", main = method)
-
-            if (indpoints && method == "Pooled") {
-                points(dat$x, jitter(dat$y, .8), col = "gray", pch = 16, cex = .5)
-            } else if (indpoints && method == "Mean") {
-                points(dato$x, jitter(dato$y, .8), col = "gray", pch = 16, cex = .5)
-            }
-            points(datmean$x, datmean$y, pch = 16, cex = .9)
-            axis(1, majticks, labels = majlabels)
-            axis(1, minticks, labels = NA, tcl = -0.25, lwd = 0, lwd.ticks = 1)
-            axis(2, majticks, labels = majlabels, las = 1)
-            axis(2, minticks, labels = NA, tcl = -0.25, lwd = 0, lwd.ticks = 1)
-            lines(tempnew$y ~ tempnew$x, lwd = 1.5)
-
-            if (printvars) {
-                leg <- vector("expression", length(vartext))
-                for (j in seq_along(vartext)) {
-                    tmp <- round(dfres[[vartext[j]]], 6)
-                    leg[j] <- parse(text = paste(tobquote[[j]], " == ", tmp))
-                }
-                legend("bottomleft", legend = leg, xjust = 0, cex = .7)
-            }
-            graphics.off()
-        } else if (class(fit) == "try-error") {
-            warning(paste0("Unable to fit error: ", strsplit(fit[1], "\n")[[1]][2]))
-            xmin <- min(c(dat$x[dat$x > 0], .1))
-            xmax <- max(dat$x)
-            ymin <- min(c(dat$y, dat$y[dat$y > 0], 1))
-            ymax <- min(c(1000, max(dat$y))) + 5
-
-            pdf(file = paste0(outdir, method, ".pdf"))
-            par(mar = c(5, 4, 4, 4) + 0.3)
-            plot(dat$x, dat$y,
-                 type = "n", log = "xy", yaxt = "n", xaxt = "n", bty = "l",
-                 xlim = c(xmin, xmax),
-                 ylim = c(ymin, ymax),
-                 xlab = "Price", ylab = "Reported Consumption", main = method)
-
-            if (indpoints && method == "Pooled") {
-                points(dat$x, jitter(dat$y, .8), col = "gray", pch = 16, cex = .5)
-            } else if (indpoints && method == "Mean") {
-                points(dato$x, jitter(dato$y, .8), col = "gray", pch = 16, cex = .5)
-            }
-            points(datmean$x, datmean$y, pch = 16, cex = .9)
-            axis(1, majticks, labels = majlabels)
-            axis(1, minticks, labels = NA, tcl = -0.25, lwd = 0, lwd.ticks = 1)
-            axis(2, majticks, labels = majlabels, las = 1)
-            axis(2, minticks, labels = NA, tcl = -0.25, lwd = 0, lwd.ticks = 1)
-            graphics.off()
-        }
-    }
     dfres
 }
 
