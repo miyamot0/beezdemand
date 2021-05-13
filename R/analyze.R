@@ -534,8 +534,6 @@ ExtractCoefs <- function(pid, adf, fit, eq, cols, kest, constrainq0) {
 ##' @param nrepl Number of zeros to replace with replacement value (replnum). Can accept either a number or "all" if all zeros should be replaced. Default is to replace the first zero only.
 ##' @param replnum Value to replace zeros. Default is .01
 ##' @param method Character string of length 1. Accepts "Mean" to fit to mean data or "Pooled" to fit to pooled data
-##' @param indpoints Boolean whether to plot individual points in gray. Default is TRUE.
-##' @param vartext Character vector specifying indices to report on plots. Valid indices include "Q0d", "Alpha", "Q0e", "EV", "Pmaxe", "Omaxe", "Pmaxd", "Omaxd", "K", "Q0se", "Alphase", "R2", "AbsSS"
 ##' @return Data frame
 ##' @author Brent Kaplan <bkaplan.ku@@gmail.com>
 ##' @import graphics
