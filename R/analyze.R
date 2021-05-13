@@ -308,6 +308,9 @@ FitCurves <- function(dat, equation, k, agg = NULL, detailed = FALSE, xcol = "x"
     names(fits) <- ps
     names(adfs) <- ps
     names(newdats) <- ps
+
+    class(dfres) <- "beezdemand"
+
     if (detailed) {
         return(list("dfres" = dfres,
                     "fits" = fits,
@@ -410,12 +413,16 @@ FitCurves.linear <- function(dat, equation, agg = NULL, detailed = FALSE, xcol =
   names(fits) <- ps
   names(adfs) <- ps
   names(newdats) <- ps
+
+  class(dfres) <- "beezdemand"
+
   if (detailed) {
     return(list("dfres" = dfres,
                 "fits" = fits,
                 "newdats" = newdats,
                 "adfs" = adfs))
   } else {
+
     return(dfres)
   }
 }
@@ -445,6 +452,7 @@ ExtractCoefs.linear <- function(pid, adf, fit, eq, cols) {
   dfrow[1, "SdRes"] <- sqrt(dfrow[1, "AbsSS"]/(nrow(adf) - length(fit$m$getPars())))
   dfrow[1, "Notes"] <- if ("nls2" %in% class(fit)) "wrapnls failed to converge, reverted to nlxb" else fit$convInfo$stopMessage
   dfrow[1, "Notes"] <- trim.leading(dfrow[1, "Notes"])
+
   dfrow
 }
 
@@ -519,6 +527,7 @@ ExtractCoefs <- function(pid, adf, fit, eq, cols, kest, constrainq0) {
         }
   }
     dfrow[1, "Notes"] <- trim.leading(dfrow[1, "Notes"])
+
     dfrow
 }
 
@@ -723,6 +732,8 @@ FitMeanCurves <- function(dat, equation, k, remq0e = FALSE, replfree = NULL, rem
         }
     }
     dfres <- merge(dfresempirical, dfres, by = "id")
+
+    class(dfres) <- "beezdemand"
 
     dfres
 }
